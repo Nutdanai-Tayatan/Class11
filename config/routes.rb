@@ -7,5 +7,6 @@ Rails.application.routes.draw do
   post 'login' ,to: 'users#login'
   get "feed/:id" ,to: "users#feed"
   get "profile/:name" ,to:"users#profile"
-  get "/updateprofile/:name/:checkfollow" ,to: "users#profileUpdate"
+  get "/updateprofile/:name" ,to: "users#profileUpdate"
+  get "/like/:postID" ,to: "users#likeUpdate"
 end

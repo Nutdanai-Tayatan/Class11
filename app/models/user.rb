@@ -11,15 +11,24 @@
 #
 class User < ApplicationRecord
   has_many :posts
-  has_many :follows
+  has_many :likes
+
   has_secure_password
 
   def check_email
     if(User.find_by_email(self.email))
       errors.add(:email, "already exists")
-      false
+      return false
     end
-    true
+    return true
+  end
+
+  def check_name
+    if(User.find_by_name(self.name))
+      errors.add(:name, "already exists")
+      return false
+    end
+    return true
   end
 
   def check_password(password_confirmation)
@@ -47,6 +56,31 @@ class User < ApplicationRecord
       false
     end
   end
+
+  def get_feed_post
+    query = <<-SQL
+    SELECT p.user_id as name , p.msg as msg , p.updated_at as update_at ,p.id as postID
+    FROM users u,follows f ,posts p
+    WHERE f.followee_id = "#{self.id}" and p.user_id = f.following_id and u.id = "#{self.id}"
+    order by update_at desc
+    SQL
+
+    result = ActiveRecord::Base.connection.execute(query)
+    return result
+  end
+
+  def getProfile
+    query = <<-SQL
+    SELECT u.name as name ,p.msg as msg , p.updated_at as update_at,p.id as postID
+    FROM users u , posts p
+    WHERE p.user_id = "#{self.id}" and u.id = "#{self.id}"
+    order by update_at DESC
+    SQL
+    result = ActiveRecord::Base.connection.execute(query)
+    return result
+  end
+
+
 
 
 

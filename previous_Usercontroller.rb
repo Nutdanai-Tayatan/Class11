@@ -2,7 +2,7 @@ class UsersController < ApplicationController
   skip_before_action :verify_authenticity_token ,only: %i[login]
   before_action :set_user, only: %i[ show edit update destroy ]
   before_action :landing_page, only: [:login,:new,:index]
-  before_action :logged_in , except: %i[login index new create profile profileUpdate destroy_all likeUpdate]
+  before_action :logged_in , except: %i[login index new create profile profileUpdate destroy_all]
 
   # GET /users or /users.json
   def index
@@ -112,25 +112,59 @@ class UsersController < ApplicationController
 
 
   def feed
+    # @user = User.find(session[:user_id])
+    # # puts "---------------------------------#{@user}-----------------------------------------"
+    # following = []
+    # @user.follows.reload.each do |f|
+    #   # puts "----------------------------------#{f.followee_id}--------------------------------------------"
+    #   following = following + [f.followee_id] if (f.followee_id)
+    # end
+    #
+    # @post = []
+    # # puts "--following------------------------#{@post.to_s}------------------------------------------------"
+    # following.each do |f|
+    #   @user = User.find f
+    #   @user.posts.each do |p|
+    #     @post = @post+ [[p.updated_at , p.user.name, p.msg ,p.user.id]]
+    #   end
+    # end
+    # # puts "==================================#{@post.to_s}===================================================="
+    # @post.sort
+    # @post = @post.reverse
     @user = User.find(session[:user_id])
     @post= @user.get_feed_post
-    @getLike = []
-    @checkLike = []
-    @getUserLike = []
-    @post.each do |p|
-      @getLike = @getLike + [{"numberOfLike"=>0}] if Like.getLike(p[3]) == []
-      @getLike = @getLike + Like.getLike(p[3]) if Like.getLike(p[3]) != []
-      @checkLike = @checkLike + [true] if @user.likes.find_by(post_id:p[3])
-      @checkLike = @checkLike + [false] if !@user.likes.find_by(post_id:p[3])
-      @getUserLike = @getUserLike + [Like.getUserLike(p[3])]
-      # puts "--------------------------#{@getUserLike}--------------------------"
-    end
-
 
   end
 
   def profile
-    @post = nil
+
+    # @otherUser = User.find_by_id(params[:name])
+    #
+    # @current_user = User.find_by_id(session[:user_id])
+    # @check_follow = false
+    #
+    # if(!@otherUser || !@current_user)
+    #   redirect_to "/feed/#{session[:user_id]}"
+    # else
+    #   # puts "@current_user -----------------------------------#{@current_user.id}"
+    #   # puts "@otherUser---------------------------------------#{@otherUser.id}"
+    #   @otherUser.follows.reload.each do |f|
+    #
+    #     if(f.follower_id == session[:user_id].to_i)
+    #       @check_follow = true
+    #       break
+    #     end
+    #   end
+    #
+    #
+    #   @name = @otherUser.name
+    #   @post = []
+    #   @otherUser.posts.each do |p|
+    #     @post = @post + [[p.updated_at , p.msg]]
+    #   end
+    #   @post.sort
+    #   @post = @post.reverse
+    # end
     if(!User.find_by_name(params[:name]))
       redirect_to "/feed/#{session[:user_id]}"
     else
@@ -138,18 +172,6 @@ class UsersController < ApplicationController
       user = User.find_by_name(params[:name])
       @post = user.getProfile
     end
-    @user = User.find_by_id(session[:user_id])
-    @getLike = []
-    @checkLike = []
-    @getUserLike = []
-    @post.each do |p|
-      @getLike = @getLike + [{"numberOfLike"=>0}] if Like.getLike(p[3]) == []
-      @getLike = @getLike + Like.getLike(p[3]) if Like.getLike(p[3]) != []
-      @checkLike = @checkLike + [true] if @user.likes.find_by(post_id:p[3])
-      @checkLike = @checkLike + [false] if !@user.likes.find_by(post_id:p[3])
-      @getUserLike = @getUserLike + [Like.getUserLike(p[3])]
-    end
-
 
 
 
@@ -158,6 +180,20 @@ class UsersController < ApplicationController
   end
 
   def profileUpdate
+  #   @current_user = User.find(session[:user_id])
+  #   @follow_user = User.find(params[:name])
+  #   # puts "---------------------#{session[:user_id]}----------------------------#{params[:name]}-----------------------------------------"
+  #   if(params[:checkfollow].to_s == "true".to_s)
+  #     @current_user.follows.find_by(followee_id:params[:name].to_i).destroy
+  #     @follow_user.follows.find_by(follower_id:session[:user_id].to_i).destroy
+  #     redirect_to "/profile/#{params[:name]}"
+  #   else
+  #     Follow.create(user:@current_user,followee_id:@follow_user.id)
+  #     Follow.create(user:@follow_user,follower_id:@current_user.id)
+  #     redirect_to "/profile/#{params[:name]}"
+  #   end
+  #
+  # end
     @user = User.find(session[:user_id])
     @other_user = User.find_by_name(params[:name])
 
@@ -169,21 +205,6 @@ class UsersController < ApplicationController
       Follow.create(followee_id:@user.id,following_id:@other_user.id)
       redirect_to "/profile/#{params[:name]}"
     end
-  end
-
-  def likeUpdate
-    @user = User.find(session[:user_id])
-    @post = Post.find(params[:postID])
-    @checkLike = Like.find_by(user:@user,post:@post)
-    if @checkLike
-      @checkLike.destroy
-      redirect_to "/feed/#{session[:user_id]}"
-    else
-      @user.likes.create(post:@post)
-      redirect_to "/feed/#{session[:user_id]}"
-    end
-
-
   end
 
 

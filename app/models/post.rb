@@ -17,6 +17,7 @@
 #  user_id  (user_id => users.id)
 #
 class Post < ApplicationRecord
+  has_many :likes
   belongs_to :user
 
   def check_session(session_data)
@@ -32,4 +33,5 @@ class Post < ApplicationRecord
     errors.add(:user_id,"You cant edit other people's user_id")
     return false
   end
+
 end

@@ -19,3 +19,8 @@ two:
   name: MyString
   email: MyString
   password_digest: MyString
+
+wrong_email:
+  email: a
+  name: xx
+  password_digest: MyString
