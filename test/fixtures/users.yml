@@ -13,14 +13,22 @@
 one:
   name: MyString
   email: MyString
-  password_digest: MyString
+  password_digest: <%= BCrypt::Password.create('123') %>
 
 two:
   name: MyString
   email: MyString
   password_digest: MyString
 
-wrong_email:
-  email: a
-  name: xx
-  password_digest: MyString
+three:
+  id: 1
+  name: "1"
+  email: "1"
+  password_digest: <%= BCrypt::Password.create('1') %>
+
+four:
+  id: 2
+  name: "2"
+  email: "2"
+  email: "2"
+  password_digest: <%= BCrypt::Password.create('2') %>

@@ -1,10 +1,13 @@
 require "application_system_test_case"
 
 class UsersTest < ApplicationSystemTestCase
-  setup do
-    @user = users(:one)
-  end
+  # setup do
+  #   @user = users(:three)
+  # end
 
+  # setup do
+  #   @folllow = follows()
+  # end
   # test "visiting the index" do
   #   visit users_url
   #   assert_selector "h1", text: "Users"
@@ -44,4 +47,39 @@ class UsersTest < ApplicationSystemTestCase
   #
   #   assert_text "User was successfully destroyed"
   # end
+  test "login_fail" do
+    visit main_path
+    fill_in "Email", with: '1'
+    fill_in "Password", with: '2'
+    click_on "login"
+    assert_text "Password incorrect !!!"
+  end
+
+  test "login_success" do
+    visit main_path
+    fill_in "Email", with: '1'
+    fill_in "Password", with: '1'
+    click_on "login"
+    click_on "logout"
+  end
+
+  test "like" do
+    visit main_path
+    fill_in "Email", with: "1"
+    fill_in "Password" , with: "1"
+    click_on "login"
+    click_on "Create post"
+    fill_in "Msg" ,with: "aaaaa"
+    click_on "Create Post"
+    click_on "logout"
+    fill_in "Email", with: "2"
+    fill_in "Password" , with: "2"
+    click_on "login"
+    visit "profile/1"
+    click_on "Follow"
+    click_on "Home"
+    assert_difference('Like.count') do
+      click_on "Like" , match: :first
+    end
+  end
 end

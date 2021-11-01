@@ -8,13 +8,3 @@
 #  followee_id  :integer
 #  following_id :integer
 #
-
-one:
-  following_id: 1
-  followee_id: 1
-  user: one
-
-two:
-  following_id: 1
-  followee_id: 1
-  user: two
