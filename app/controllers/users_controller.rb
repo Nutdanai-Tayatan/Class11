@@ -29,7 +29,7 @@ class UsersController < ApplicationController
     checkPassword = @user.check_password(params[:user][:password_confirmation])
     checkEmail = @user.check_email
     checkName = @user.check_name
-    puts "--------------------------#{checkName}-----------------------------------------"
+
     respond_to do |format|
       if checkPassword && checkEmail && checkName && @user.save
 
@@ -114,17 +114,7 @@ class UsersController < ApplicationController
   def feed
     @user = User.find(session[:user_id])
     @post= @user.get_feed_post
-    @getLike = []
-    @checkLike = []
-    @getUserLike = []
-    @post.each do |p|
-      @getLike = @getLike + [{"numberOfLike"=>0}] if Like.getLike(p[3]) == []
-      @getLike = @getLike + Like.getLike(p[3]) if Like.getLike(p[3]) != []
-      @checkLike = @checkLike + [true] if @user.likes.find_by(post_id:p[3])
-      @checkLike = @checkLike + [false] if !@user.likes.find_by(post_id:p[3])
-      @getUserLike = @getUserLike + [Like.getUserLike(p[3])]
-      # puts "--------------------------#{@getUserLike}--------------------------"
-    end
+
 
 
   end
@@ -137,17 +127,8 @@ class UsersController < ApplicationController
       @check_follow = Follow.find_by(followee_id:session[:user_id],following_id:User.find_by_name(params[:name]).id)
       user = User.find_by_name(params[:name])
       @post = user.getProfile
-    end
-    @user = User.find_by_id(session[:user_id])
-    @getLike = []
-    @checkLike = []
-    @getUserLike = []
-    @post.each do |p|
-      @getLike = @getLike + [{"numberOfLike"=>0}] if Like.getLike(p[3]) == []
-      @getLike = @getLike + Like.getLike(p[3]) if Like.getLike(p[3]) != []
-      @checkLike = @checkLike + [true] if @user.likes.find_by(post_id:p[3])
-      @checkLike = @checkLike + [false] if !@user.likes.find_by(post_id:p[3])
-      @getUserLike = @getUserLike + [Like.getUserLike(p[3])]
+      @user = User.find_by_id(session[:user_id])
+
     end
 
 
@@ -163,7 +144,7 @@ class UsersController < ApplicationController
 
     @check_follow = Follow.find_by(followee_id:@user.id,following_id:@other_user.id)
     if(@check_follow)
-      @check_follow.destroy
+      ActiveRecord::Base.connection.execute("DELETE FROM follows WHERE followee_id=#{@user.id} and following_id=#{@other_user.id}")
       redirect_to "/profile/#{params[:name]}"
     else
       Follow.create(followee_id:@user.id,following_id:@other_user.id)
@@ -174,9 +155,9 @@ class UsersController < ApplicationController
   def likeUpdate
     @user = User.find(session[:user_id])
     @post = Post.find(params[:postID])
-    @checkLike = Like.find_by(user:@user,post:@post)
+    @checkLike = Like.find_by(user_id:@user.id,post_id:@post.id)
     if @checkLike
-      @checkLike.destroy
+      ActiveRecord::Base.connection.execute("DELETE FROM likes WHERE post_id=#{@post.id} AND user_id=#{@user.id}")
       redirect_to "/feed/#{session[:user_id]}"
     else
       @user.likes.create(post:@post)

@@ -17,8 +17,15 @@
 #  user_id  (user_id => users.id)
 #
 class Post < ApplicationRecord
-  has_many :likes
+
   belongs_to :user
+
+  has_many :match_posts ,foreign_key: :post_id , class_name:"Like"
+  has_many :likes , through: :match_posts , source: :user 
+
+
+
+
 
   def check_session(session_data)
 

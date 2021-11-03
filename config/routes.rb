@@ -9,4 +9,6 @@ Rails.application.routes.draw do
   get "profile/:name" ,to:"users#profile"
   get "/updateprofile/:name" ,to: "users#profileUpdate"
   get "/like/:postID" ,to: "users#likeUpdate"
+  post "setFollow" , to: "users#profileUpdate"
+  post "setLike" , to:"users#likeUpdate"
 end

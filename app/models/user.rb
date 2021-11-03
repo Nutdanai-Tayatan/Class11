@@ -6,12 +6,23 @@
 #  email           :string
 #  name            :string
 #  password_digest :string
-#  created_at      :datetime         not null
-#  updated_at      :datetime         not null
 #
 class User < ApplicationRecord
   has_many :posts
   has_many :likes
+
+  has_many :match_followees ,foreign_key: :followee_id , class_name:"Follow"
+  has_many :followings ,through: :match_followees
+
+  has_many :match_followers, foreign_key: :following_id , class_name:"Follow"
+  has_many :followees , through: :match_followers
+
+
+
+
+
+
+
 
   has_secure_password
 
