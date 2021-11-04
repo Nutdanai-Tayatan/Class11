@@ -9,18 +9,14 @@
     %p= "msg : #{p[1]}"
     %p{style:"margin-bottom:0.8rem;"}= "updated at : #{p[2]}"
 
+
+    %p{id:"likeby#{Post.find(p[3]).id}", hidden:""}
+      - Post.find(p[3]).likes.each do |u|
+        = u.name + ","
     -# %button.btn.btn-link{"data-bs-target" => "#showName#{c}", "data-bs-toggle" => "modal", class:"m-0 p-0 "} like : #{@getLike[c]["numberOfLike"]}
-    %button.btn.btn-link{"data-bs-target" => "#showName#{c}", "data-bs-toggle" => "modal", class:"m-0 p-0 "} like : #{Post.find(p[3]).likes.count}
-    .modal.fade{id:"showName#{c}"}
-      .modal-dialog
-        .modal-content
-          .modal-header
-            %h5.modal-title list name
-            %button.btn-close{"data-bs-dismiss" => "modal"}
-          .modal-body
-            %ul.list-group.list-group-flush
-              -Post.find(p[3]).likes.each do |u|
-                %a{href:"/profile/#{u.name}" ,class:"list-group-item" ,color:"black"} #{u.name}
+    -# %button.btn.btn-link{ "data-bs-toggle" => "modal", class:"m-0 p-0 btnListName",id:"#{Post.find(p[3]).id} #likeby#{Post.find(p[3]).id}" } like : #{Post.find(p[3]).likes.count}
+    %button.btn.btn-link.showlike.btn-sm{class:"p-0",type: "button" ,id:"#{Post.find(p[3]).id} #likeby#{Post.find(p[3]).id}" } like = #{Post.find(p[3]).likes.count}
+
 
 
     %hr{style:"margin:0.5rem 0;"}
@@ -31,3 +27,37 @@
       -else
         = button_to "Like", setLike_url, method: :post, params: { postID:"#{p[3]}" },class:"btn btn-info btn-sm"
     -c = c+1
+
+.modal.fade{id:"showlike"}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h5.modal-title list name
+        %button.btn-close{"data-bs-dismiss" => "modal"}
+      .modal-body
+
+        %ul.list-group.list-group-flush
+          #showlikeBodyText
+          -# -Post.find(data[3]).likes.each do |u|
+          -#   %a{href:"/profile/#{u.name}" ,class:"list-group-item" ,color:"black"} #{u.name}
+
+:javascript
+  $(document).ready(function(){
+    $(".showlike").click(function(){
+      var input = this.id.split(" ");
+      var postID = input[0];
+      var postLikeby = $(input[1]).text().split(",");
+      for (var i = 0; i < input.length; i++){
+        var postfix = '<a href='
+        var templink = '/profile/'+postLikeby[i]+'>';
+        var link = templink.replace(/\s/g, '');
+        var tempname = postLikeby[i]
+        var name = postLikeby[i].replace(/\s/g, '');
+        var suffix = '</a></br>'
+        postLikeby[i] = postfix+link+name+suffix;
+      }
+
+      $("#showlikeBodyText").html(postLikeby);
+      $("#showlike").modal("toggle");
+    });
+  });
