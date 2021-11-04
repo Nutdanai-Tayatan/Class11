@@ -44,20 +44,20 @@
 :javascript
   $(document).ready(function(){
     $(".showlike").click(function(){
-      var input = this.id.split(" ");
-      var postID = input[0];
-      var postLikeby = $(input[1]).text().split(",");
-      for (var i = 0; i < input.length; i++){
-        var postfix = '<a href='
-        var templink = '/profile/'+postLikeby[i]+'>';
-        var link = templink.replace(/\s/g, '');
-        var tempname = postLikeby[i]
-        var name = postLikeby[i].replace(/\s/g, '');
+      var getData = this.id.split(" ");
+      var postID = getData[0];
+      var getLikeName = $(getData[1]).text().split(",");
+      for (var i = 0; i < getData.length; i++){
+        var start = '<a href='
+        var getLink = '/profile/'+getLikeName[i]+'>';
+        var link = getLink.replace(/\s/g, '');
+        var tempname = getLikeName[i]
+        var name = getLikeName[i].replace(/\s/g, '');
         var suffix = '</a></br>'
-        postLikeby[i] = postfix+link+name+suffix;
+        getLikeName[i] = start+link+name+suffix;
       }
 
-      $("#showlikeBodyText").html(postLikeby);
+      $("#showlikeBodyText").html(getLikeName);
       $("#showlike").modal("toggle");
     });
   });
